@@ -1,0 +1,66 @@
+/*
+ * Timer2RTC.c
+ *
+ *  Created on: 2 mar 2020
+ *      Author: G505s
+ */
+
+/**
+ * \file
+ *
+ * \brief
+ *      This controls the RTC.
+ *
+ * \author
+ *      Tomasz Konieczka tomal74@o2.pl
+ *
+ */
+
+#include "Timer2RTC.h"
+
+#include <avr/interrupt.h>
+#include <avr/io.h>
+
+t_time RTC;
+/** time change flag */
+volatile uint8_t time_flag;
+
+/**
+ *   \brief This will intialize the Timer2 as RTC with 32,768kHz external oscilator - 1s interrupt.
+ */
+void timer2RTC_init(void) {
+	/** Set Timer/Counter2 to be asynchronous from the CPU clock with a 32,768kHz */
+	ASSR |= (1 << AS2);
+	/**	Wait until TC2 is updated*/
+	while (ASSR & 0x07)
+		;
+	/** Set prescaleer as 128 - 1s IRQ */
+	TCCR2A |= (1 << CS22) | (1 << CS20);
+	/** Enable Timer2 overflow IRQ */
+	TIMSK2 |= (1 << TOIE2);
+}
+
+
+
+/**
+ *   \brief 1s Timer2 overflow interrupt.
+ */
+ISR(TIMER2_OVF_vect) {
+	RTC.sec++;
+	RTC.total_sec++;
+
+	if (RTC.sec >= 60) {
+		RTC.min++;
+		RTC.sec = 0;
+	}
+	if (RTC.min >= 60) {
+		RTC.hour++;
+		RTC.min = 0;
+	}
+	if (RTC.hour >= 24) {
+		RTC.hour = 0;
+	}
+
+	time_flag = 1;
+}
+

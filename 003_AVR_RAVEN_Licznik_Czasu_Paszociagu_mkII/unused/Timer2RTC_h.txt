@@ -1,0 +1,40 @@
+/*
+ * Timer2RTC.h
+ *
+ *  Created on: 2 mar 2020
+ *      Author: G505s
+ */
+
+/**
+ * \file
+ *
+ * \brief
+ *      This controls the RTC.
+ *
+ * \author
+ *      Tomasz Konieczka tomal74@o2.pl
+ *
+ */
+
+#ifndef TIMER2RTC_H_
+#define TIMER2RTC_H_
+
+#include <avr/io.h>
+
+/** time struct */
+typedef struct {
+	/** volatile uint8_t seconds */
+	volatile uint8_t sec;
+	/** volatile uint8_t minutes */
+	volatile uint8_t min;
+	/** volatile uint8_t hour */
+	volatile uint8_t hour;
+	/** total seconds */
+	volatile uint32_t total_sec;
+} t_time;
+
+
+void timer2RTC_init(void);
+
+
+#endif /* TIMER2RTC_H_ */
